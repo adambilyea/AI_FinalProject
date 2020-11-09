@@ -115,7 +115,7 @@ MonoBehaviour:
   m_MinSize: {x: 679, y: 492}
   m_MaxSize: {x: 14002, y: 14042}
   vertical: 0
-  controlID: 40
+  controlID: 98
 --- !u!114 &6
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -140,7 +140,7 @@ MonoBehaviour:
   m_MinSize: {x: 403, y: 492}
   m_MaxSize: {x: 10001, y: 14042}
   vertical: 1
-  controlID: 41
+  controlID: 99
 --- !u!114 &7
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -165,7 +165,7 @@ MonoBehaviour:
   m_MinSize: {x: 403, y: 221}
   m_MaxSize: {x: 8003, y: 4021}
   vertical: 0
-  controlID: 42
+  controlID: 100
 --- !u!114 &8
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -395,7 +395,7 @@ MonoBehaviour:
       scrollPos: {x: 0, y: 0}
       m_SelectedIDs: 
       m_LastClickedID: 0
-      m_ExpandedIDs: 3afbffff
+      m_ExpandedIDs: 72fbffff
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -481,9 +481,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: 0, y: 0, z: 0}
+    m_Target: {x: 21.33832, y: 15.563166, z: 25.335674}
     speed: 2
-    m_Value: {x: 3.9115708, y: 0.8752231, z: 25.68736}
+    m_Value: {x: 21.33832, y: 15.563166, z: 25.335674}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -529,13 +529,13 @@ MonoBehaviour:
     m_GridAxis: 1
     m_gridOpacity: 0.5
   m_Rotation:
-    m_Target: {x: -0.08717229, y: 0.89959055, z: -0.21045254, w: -0.3726226}
+    m_Target: {x: 0.17023885, y: -0.68283135, z: 0.168408, w: 0.6902357}
     speed: 2
-    m_Value: {x: 0.008971239, y: -0.08240564, z: -0.00071874016, w: -0.99659294}
+    m_Value: {x: 0.17127173, y: -0.6825689, z: 0.16942985, w: 0.68997043}
   m_Size:
     m_Target: 10
     speed: 2
-    m_Value: 37.5851
+    m_Value: 10
   m_Ortho:
     m_Target: 0
     speed: 2
@@ -663,20 +663,20 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets
+    - Assets/Assets
   m_ViewMode: 1
   m_StartGridSize: 96
   m_LastFolders:
-  - Assets
+  - Assets/Assets
   m_LastFoldersGridSize: 96
   m_LastProjectPath: C:\Users\AdamBilyea\Documents\Unity Stuff\AI_FinalProject\AI_FinalProject
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
     scrollPos: {x: 0, y: 0}
-    m_SelectedIDs: 123c0000
-    m_LastClickedID: 15378
-    m_ExpandedIDs: 00000000123c000000ca9a3b
+    m_SelectedIDs: ee340000
+    m_LastClickedID: 13550
+    m_ExpandedIDs: 000000007833000000ca9a3b
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -704,7 +704,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 
+    m_ExpandedIDs: 0000000078330000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -731,8 +731,8 @@ MonoBehaviour:
   m_ListAreaState:
     m_SelectedInstanceIDs: 
     m_LastClickedInstanceID: 0
-    m_HadKeyboardFocusLastEvent: 0
-    m_ExpandedInstanceIDs: c6230000c8620000ee53000080440000
+    m_HadKeyboardFocusLastEvent: 1
+    m_ExpandedInstanceIDs: c6230000c8620000ee5300008044000000000000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
