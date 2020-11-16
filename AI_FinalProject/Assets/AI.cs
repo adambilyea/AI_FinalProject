@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using UnityEngine.UI;
-public class AI : MonoBehaviour
+
+public class AI
 {
     // Start is called before the first frame update
     public virtual void SendParameters(EnvironmentParameters env)

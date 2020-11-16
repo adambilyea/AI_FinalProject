@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class EnvironmentParameters
 {
@@ -24,8 +25,8 @@ public abstract class Environment : MonoBehaviour
     public bool acceptingSteps;
 
     public AI agent;
-    public int comPort;
     public int frameToSkip;
+    public int comPort;
     public int framesSinceAction;
     public string currentPythonCommand;
     public bool skippingFrames;
@@ -72,7 +73,6 @@ public abstract class Environment : MonoBehaviour
     {
 
     }
-
     public virtual void Step()
     {
         acceptingSteps = false;
@@ -83,6 +83,7 @@ public abstract class Environment : MonoBehaviour
         }
 
         reward = 0;
+        Debug.Log(agent.GetAction());
         actions = agent.GetAction();
         framesSinceAction = 0;
 
@@ -90,6 +91,22 @@ public abstract class Environment : MonoBehaviour
         MiddleStep(sendAction);
 
         StartCoroutine(WaitStep());
+    }
+
+    public virtual void EndStep()
+    {
+        agent.SendState(collectState(), reward, done);
+        skippingFrames = false;
+        acceptingSteps = true;
+    }
+
+    public virtual void Reset()
+    {
+        reward = 0;
+        currentStep = 0;
+        episodeCount++;
+        done = false;
+        acceptingSteps = false;
     }
 
     public virtual void EndReset()
@@ -115,4 +132,11 @@ public abstract class Environment : MonoBehaviour
             }
         }
     }
+
+    public IEnumerator WaitStep()
+    {
+        yield return new WaitForSeconds(waitTime);
+        EndStep();
+    }
+
 }

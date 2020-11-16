@@ -19,10 +19,10 @@ public class InternalAgent : AI
     {
         q_table = new float[100][];
         action = 0;
-        for (int i = 0; i < env.state_size; i++)
+        for (int i = 0; i < 100; i++)
         {
-            q_table[i] = new float[env.action_size];
-            for (int j = 0; j < env.action_size; j++)
+            q_table[i] = new float[100];
+            for (int j = 0; j < 4; j++)
             {
                 q_table[i][j] = 0.0f;
             }
@@ -35,9 +35,16 @@ public class InternalAgent : AI
 	/// <returns>The action choosen by the agent's policy</returns>
 	public override float[] GetAction()
     {
+        
         action = q_table[lastState].ToList().IndexOf(q_table[lastState].Max());
-        if (Random.Range(0f, 1f) < e) { action = Random.Range(0, 3); }
-        if (e > eMin) { e = e - ((1f - eMin) / (float)annealingSteps); }
+        if (Random.Range(0f, 1f) < e)
+        {
+            action = Random.Range(0, 3);
+        }
+        if (e > eMin)
+        {
+            e = e - ((1f - eMin) / (float)annealingSteps);
+        }
         float currentQ = q_table[lastState][action];
         return new float[1] { action };
     }
@@ -74,6 +81,8 @@ public class InternalAgent : AI
         }
         lastState = nextState;
     }
+
+   
 }
 
 
