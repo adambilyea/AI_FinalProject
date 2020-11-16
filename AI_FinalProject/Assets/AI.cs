@@ -1,40 +1,33 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using System.Linq;
+using UnityEngine.UI;
 public class AI : MonoBehaviour
 {
-    public int Team;
-    private int State = 1;
-    public GameObject ball;
-    private int speed = 5;
-    public int Reward;
-
     // Start is called before the first frame update
-    void Start()
+    public virtual void SendParameters(EnvironmentParameters env)
     {
-        
+
+    }
+    public virtual string Receive()
+    {
+        return "";
     }
 
-    // Update is called once per frame
-    void Update()
+    public virtual float[] GetAction()
     {
-        switch (State)
-            {
-            //Chase after ball
-            case 1:
-                float step = speed * Time.deltaTime;
-                transform.position = Vector3.MoveTowards(transform.position, ball.transform.position, step);
-                //transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z + 1.0f);
-                //Vector3.Lerp(transform.position, ball.transform.position, Time.time);
-                break;
-            //Defending
-            case 2:
-                break;
-            default:
-                break;
-                
-            }
+        return new float[1] { 0.0f };
+    }
+
+    public virtual float[] GetValue()
+    {
+        float[] value = new float[1];
+        return value;
+    }
+
+    public virtual void SendState(List<float> state, float reward, bool d)
+    {
 
     }
 }

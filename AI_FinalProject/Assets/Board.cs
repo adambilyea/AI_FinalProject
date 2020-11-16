@@ -5,6 +5,9 @@ using UnityEngine;
 public class Board : MonoBehaviour
 {
     public GameObject agent;
+    public GameObject hole;
+    public GameObject reward;
+
     private float Time;
     private int gridSize = 10;
     private int[] board;
@@ -14,25 +17,66 @@ public class Board : MonoBehaviour
     {
         positions = new Vector3[100];
         board = new int [100];
-        newGame(); 
+
+
 
         //Set positions
+        int number = 0;
         for(int x = 0; x < 10; x++)
         {
             for (int z = 0; z < 10; z++)
             {
-                positions[z * x] = new Vector3(x * 10, 1, z * 10);
-                Debug.Log(positions[z * x]);
-            }
+                positions[number] = new Vector3(x * 10, 1, z * 10);
+                number++;
 
+            }
         }
+
+        for (int x = 0; x < 100; x++)
+        {
+            board[x] = 0;
+            //Debug.Log(positions[x]);
+        }
+        newGame();
     }
 
     public void newGame()
     {
-        for (int x = 0; x < 100; x++)
+        //spawn holes
+        for (int x = 0; x < 10; x++)
         {
-           
+            while (true)
+            {
+
+                int rand = Random.Range(0, 100);
+                //Debug.Log(rand);
+                if(board[rand] == 0)
+                {
+                    GameObject clone;
+                    clone = Instantiate(hole, positions[rand], Quaternion.Euler(0,0,0));
+                    //Debug.Log(positions[rand]);
+                    board[rand] = 1;
+                    break;
+                }
+            }
+        }
+        //spawn rewards
+        for (int x = 0; x < 5; x++)
+        {
+            while (true)
+            {
+
+                int rand = Random.Range(0, 100);
+                //Debug.Log(rand);
+                if (board[rand] == 0)
+                {
+                    GameObject clone;
+                    clone = Instantiate(reward, positions[rand], Quaternion.Euler(0, 0, 0));
+                    //Debug.Log(positions[rand]);
+                    board[rand] = 1;
+                    break;
+                }
+            }
         }
     }
 
