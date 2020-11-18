@@ -17,7 +17,7 @@ public class EnvironmentParameters
 
 public abstract class Environment : MonoBehaviour
 {
-    public float reward;
+    public float reward = 0;
     public bool done;
     public int maxSteps;
     public int currentStep;
@@ -83,7 +83,6 @@ public abstract class Environment : MonoBehaviour
         }
 
         reward = 0;
-        Debug.Log(agent.GetAction());
         actions = agent.GetAction();
         framesSinceAction = 0;
 

@@ -21,14 +21,16 @@ public class Board : Environment
     private int gridSize = 10;
     private int[] board;
     private Vector3[] positions;
+    private Vector3[] rewardPos;
+    private GameObject[] rewardObjs;
     // Start is called before the first frame update
 
     void Start()
     {
         positions = new Vector3[100];
         board = new int[100];
-
-
+        rewardPos = new Vector3[5];
+        rewardObjs = new GameObject[5];
 
         //Set positions
         int number = 0;
@@ -77,7 +79,7 @@ public class Board : Environment
         }
 
         //spawn rewards
-        for (int x = 0; x < 5; x++)
+        for (int x = 0; x < 1; x++)
         {
             while (true)
             {
@@ -88,7 +90,8 @@ public class Board : Environment
                 {
                     GameObject clone;
                     clone = Instantiate(prize, positions[rand], Quaternion.Euler(0, 0, 0));
-                    //Debug.Log(positions[rand]);
+                    rewardPos[x] = positions[rand];
+                    rewardObjs[x] = clone;
                     board[rand] = 1;
                     break;
                 }
@@ -141,11 +144,10 @@ public class Board : Environment
     {
         base.Reset();
 
-        //foreach (GameObject actor in actorObjs)
-        //{
-        //    DestroyImmediate(actor);
-        //}
-        //actorObjs = new List<GameObject>();
+        for (int x = 0; x < 1; x++)
+        {
+            rewardObjs[x].transform.position = rewardPos[x];
+        }
 
         visualAgent.transform.position = new Vector3(0, 2, 0);
         episodeReward = 0;
@@ -193,10 +195,23 @@ public class Board : Environment
         }
 
         Collider[] hitObjects = Physics.OverlapBox(visualAgent.transform.position, new Vector3(0.3f, 0.3f, 0.3f));
-        if (hitObjects.Where(col => col.gameObject.tag == "reward").ToArray().Length == 1)
+       
+        if (hitObjects.Where(col => col.gameObject.tag == "prize").ToArray().Length == 1)
         {
+            Debug.Log("Reward got");
             reward = 1;
-            done = false;
+            done = true;
+
+            for (int i = 0; i < hitObjects.Length; i++)
+            {
+                if (hitObjects[i].gameObject.tag == "prize")
+                {
+                    hitObjects[i].transform.position = new Vector3(-100, -100, -100);
+                }
+            }
+
+            if (reward == 5)
+                done = true;
         }
         if (hitObjects.Where(col => col.gameObject.tag == "hole").ToArray().Length == 1)
         {
