@@ -62,7 +62,7 @@ public abstract class Environment : MonoBehaviour
         return state;
     }
 
-  
+
 
     public virtual void MiddleStep(int action)
     {

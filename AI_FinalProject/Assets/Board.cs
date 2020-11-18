@@ -127,20 +127,13 @@ public class Board : Environment
             playersList.Add("goal");
         }
         players = playersList.ToArray();
-       
     }
 
     public override List<float> collectState()
     {
         List<float> state = new List<float>();
-        foreach (GameObject actor in actorObjs)
-        {
-            if (actor.tag == "agent")
-            {
-                float point = (gridSize * actor.transform.position.x) + actor.transform.position.z;
-                state.Add(point);
-            }
-        }
+        float point = (gridSize * visualAgent.transform.position.x) + visualAgent.transform.position.z;
+        state.Add(point / 10);
         return state;
     }
 
@@ -158,7 +151,7 @@ public class Board : Environment
         episodeReward = 0;
         EndReset();
     }
-    
+
     public override void MiddleStep(int action)
     {
         reward = -0.05f;

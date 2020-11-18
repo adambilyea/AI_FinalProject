@@ -35,7 +35,7 @@ public class InternalAgent : AI
 	/// <returns>The action choosen by the agent's policy</returns>
 	public override float[] GetAction()
     {
-        
+
         action = q_table[lastState].ToList().IndexOf(q_table[lastState].Max());
         if (Random.Range(0f, 1f) < e)
         {
@@ -59,12 +59,12 @@ public class InternalAgent : AI
         for (int i = 0; i < 100; i++)
         {
             value_table[i] = q_table[i].Average();
-         
+
         }
         return value_table;
     }
 
-    
+
     public override void SendState(List<float> state, float reward, bool done)
     {
         int nextState = Mathf.FloorToInt(state.First());
@@ -82,7 +82,7 @@ public class InternalAgent : AI
         lastState = nextState;
     }
 
-   
+
 }
 
 
