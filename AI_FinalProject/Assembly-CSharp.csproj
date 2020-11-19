@@ -56,10 +56,10 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\InternalAgent.cs" />
+     <Compile Include="Assets\MenuSwitch.cs" />
      <Compile Include="Assets\Environment.cs" />
      <Compile Include="Assets\AI.cs" />
      <Compile Include="Assets\Board.cs" />
-     <Compile Include="Assets\MenuSwitch.cs" />
  <Reference Include="Unity.Timeline.Editor">
  <HintPath>C:/Users/AdamBilyea/Documents/Unity Stuff/AI_FinalProject/AI_FinalProject/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
  </Reference>
