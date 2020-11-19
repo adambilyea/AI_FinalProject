@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class Board : Environment
 {
@@ -15,7 +17,10 @@ public class Board : Environment
     //public GameObject agent;
     public GameObject hole;
     public GameObject prize;
+    public GameObject wallObs;
 
+    public Text generations;
+    public Text stepText;
 
     private float Time;
     private int gridSize = 10;
@@ -54,20 +59,22 @@ public class Board : Environment
 
     void Update()
     {
+        stepText.text = currentStep.ToString();
+        generations.text = episodeCount.ToString();
         RunMdp();
     }
 
     public void newGame()
     {
         //spawn holes
-        for (int x = 0; x < 10; x++)
+        for (int x = 0; x < 15; x++)
         {
             while (true)
             {
 
                 int rand = Random.Range(0, 100);
                 //Debug.Log(rand);
-                if (board[rand] == 0)
+                if (board[rand] == 0 && rand != 0)
                 {
                     GameObject clone;
                     clone = Instantiate(hole, positions[rand], Quaternion.Euler(0, 0, 0));
@@ -77,7 +84,24 @@ public class Board : Environment
                 }
             }
         }
+        //spawn wallobj
+        for (int x = 0; x < 10; x++)
+        {
+            while (true)
+            {
 
+                int rand = Random.Range(0, 100);
+                //Debug.Log(rand);
+                if (board[rand] == 0 && rand != 0)
+                {
+                    GameObject clone;
+                    clone = Instantiate(wallObs, positions[rand], Quaternion.Euler(0, 0, 0));
+                    //Debug.Log(positions[rand]);
+                    board[rand] = 1;
+                    break;
+                }
+            }
+        }
         //spawn rewards
         for (int x = 0; x < 1; x++)
         {
@@ -86,7 +110,7 @@ public class Board : Environment
 
                 int rand = Random.Range(0, 100);
                 //Debug.Log(rand);
-                if (board[rand] == 0)
+                if (board[rand] == 0 && rand != 0)
                 {
                     GameObject clone;
                     clone = Instantiate(prize, positions[rand], Quaternion.Euler(0, 0, 0));
@@ -220,7 +244,18 @@ public class Board : Environment
         }
         // Update is called once per frame
 
+        
 
+    }
+
+    public void reload()
+    {
+        SceneManager.LoadScene("SampleScene");
+    }
+
+    public void OnValueChanged()
+    {
+        waitTime = GameObject.Find("Slider").GetComponent<Slider>().value;
     }
 }
 
