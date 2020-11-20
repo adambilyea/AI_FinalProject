@@ -4,85 +4,76 @@ using UnityEngine;
 using System.Linq;
 using UnityEngine.UI;
 
-public class InternalAgent : AI
+public class InternalAgent : MonoBehaviour
 {
-    public float[][] q_table;   // The matrix containing the values estimates.
-    float learning_rate = 0.5f; // The rate at which to update the value estimates given a reward.
+    //contains the values estimates
+    public float[][] valueTable;   
+    //AI Movement Action
     int action = -1;
-    float gamma = 0.99f; // Discount factor for calculating Q-target.
-    float e = 1; // Initial epsilon value for random action selection.
-    float eMin = 0.1f; // Lower bound of epsilon.
-    int annealingSteps = 2000; // Number of steps to lower e to eMin.
+    //Initial epsilon value for random action selection
+    float epsilon = 1; 
+    //AI last state
     int lastState;
 
-    public override void SendParameters(EnvironmentParameters env)
+    //initializes the board in relation to AI
+    public void SendParameters()
     {
-        q_table = new float[100][];
+        valueTable = new float[100][];
         action = 0;
         for (int i = 0; i < 100; i++)
         {
-            q_table[i] = new float[100];
+            valueTable[i] = new float[100];
             for (int j = 0; j < 4; j++)
             {
-                q_table[i][j] = 0.0f;
+                valueTable[i][j] = 0.0f;
             }
         }
     }
 
-    /// <summary>
-    /// Picks an action to take from its current state.
-	/// </summary>
-	/// <returns>The action choosen by the agent's policy</returns>
-	public override float[] GetAction()
+    //Picks an action to make
+	public float[] GetAction()
     {
-
-        action = q_table[lastState].ToList().IndexOf(q_table[lastState].Max());
-        if (Random.Range(0f, 1f) < e)
+        action = valueTable[lastState].ToList().IndexOf(valueTable[lastState].Max());
+        if (Random.Range(0f, 1f) < epsilon)
         {
             action = Random.Range(0, 3);
         }
-        if (e > eMin)
+        if (epsilon > 0.1f)
         {
-            e = e - ((1f - eMin) / (float)annealingSteps);
+            epsilon = epsilon - ((1f - 0.1f) / (float)2000);
         }
-        float currentQ = q_table[lastState][action];
+        float currentQ = valueTable[lastState][action];
         return new float[1] { action };
     }
 
-    /// <summary>
-    /// Gets the values stored within the Q table.
-    /// </summary>
-    /// <returns>The average Q-values per state.</returns>
-    public override float[] GetValue()
+    //Gets the values in the valueTable
+    public float[] GetValue()
     {
-        float[] value_table = new float[q_table.Length];
+        float[] value_table = new float[valueTable.Length];
         for (int i = 0; i < 100; i++)
         {
-            value_table[i] = q_table[i].Average();
-
+            value_table[i] = valueTable[i].Average();
         }
         return value_table;
     }
 
-
-    public override void SendState(List<float> state, float reward, bool done)
+    //Send the next action for AI to make
+    public void SendState(List<float> state, float reward, bool done)
     {
         int nextState = Mathf.FloorToInt(state.First());
         if (action != -1)
         {
             if (done == true)
             {
-                q_table[lastState][action] += learning_rate * (reward - q_table[lastState][action]);
+                valueTable[lastState][action] += 0.5f * (reward - valueTable[lastState][action]);
             }
             else
             {
-                q_table[lastState][action] += learning_rate * (reward + gamma * q_table[nextState].Max() - q_table[lastState][action]);
+                valueTable[lastState][action] += 0.5f * (reward + 0.99f * valueTable[nextState].Max() - valueTable[lastState][action]);
             }
         }
         lastState = nextState;
     }
-
-
 }
 
 

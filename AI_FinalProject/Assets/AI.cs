@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class AI
 {
     // Start is called before the first frame update
-    public virtual void SendParameters(EnvironmentParameters env)
+    public virtual void SendParameters()
     {
 
     }

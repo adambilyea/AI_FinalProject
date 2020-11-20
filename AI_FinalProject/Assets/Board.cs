@@ -5,37 +5,39 @@ using System.Linq;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class Board : Environment
+public class Board : MonoBehaviour
 {
-    public List<GameObject> actorObjs;
+    /*******Variables*******/
+    public float reward = 0;
+    public bool done;
+    public int maxSteps;
+    public int currentStep;
+    public bool begun;
+    public bool canStep;
+    public InternalAgent agent;
+    public float[] actions;
+    public float speed;
+    public int generationCount;
+    float generationReward;
     public string[] players;
-    public GameObject visualAgent;
-    int[] objectPositions;
-    float episodeReward;
-
-    // our stuff
-    //public GameObject agent;
+    public List<GameObject> actorObjs;
+    public GameObject AI;
     public GameObject hole;
     public GameObject prize;
-    public GameObject wallObs;
-
+    public GameObject wallObjs;
+    private GameObject rewardObjs;
+    private Vector3[] positions;
+    private Vector3 rewardPos;
+    private int boardSize = 10;
+    private int[] board;
     public Text generations;
     public Text stepText;
-
-    private float Time;
-    private int gridSize = 10;
-    private int[] board;
-    private Vector3[] positions;
-    private Vector3[] rewardPos;
-    private GameObject[] rewardObjs;
-    // Start is called before the first frame update
+    ///////////////////////////////////////////////////
 
     void Start()
     {
         positions = new Vector3[100];
         board = new int[100];
-        rewardPos = new Vector3[5];
-        rewardObjs = new GameObject[5];
 
         //Set positions
         int number = 0;
@@ -48,22 +50,35 @@ public class Board : Environment
 
             }
         }
-
+        //board set to 0
         for (int x = 0; x < 100; x++)
         {
             board[x] = 0;
-            //Debug.Log(positions[x]);
         }
         newGame();
     }
 
     void Update()
     {
+        //update UI
         stepText.text = currentStep.ToString();
-        generations.text = episodeCount.ToString();
-        RunMdp();
+        generations.text = generationCount.ToString();
+        
+        //switches between AI can step or Reseting to beginning
+        if (canStep == true)
+        {
+            if (done == false)
+            {
+                Step();
+            }
+            else
+            {
+                Reset();
+            }
+        }
     }
 
+    //Spawn our Holes, Walls and our Reward in random spots
     public void newGame()
     {
         //spawn holes
@@ -73,189 +88,197 @@ public class Board : Environment
             {
 
                 int rand = Random.Range(0, 100);
-                //Debug.Log(rand);
                 if (board[rand] == 0 && rand != 0)
                 {
                     GameObject clone;
                     clone = Instantiate(hole, positions[rand], Quaternion.Euler(0, 0, 0));
-                    //Debug.Log(positions[rand]);
                     board[rand] = 1;
                     break;
                 }
             }
         }
+
         //spawn wallobj
         for (int x = 0; x < 10; x++)
         {
             while (true)
             {
-
                 int rand = Random.Range(0, 100);
-                //Debug.Log(rand);
                 if (board[rand] == 0 && rand != 0)
                 {
                     GameObject clone;
-                    clone = Instantiate(wallObs, positions[rand], Quaternion.Euler(0, 0, 0));
-                    //Debug.Log(positions[rand]);
+                    clone = Instantiate(wallObjs, positions[rand], Quaternion.Euler(0, 0, 0));
                     board[rand] = 1;
                     break;
                 }
             }
         }
-        //spawn rewards
-        for (int x = 0; x < 1; x++)
-        {
+
+        //spawn reward
             while (true)
             {
-
                 int rand = Random.Range(0, 100);
-                //Debug.Log(rand);
                 if (board[rand] == 0 && rand != 0)
                 {
                     GameObject clone;
                     clone = Instantiate(prize, positions[rand], Quaternion.Euler(0, 0, 0));
-                    rewardPos[x] = positions[rand];
-                    rewardObjs[x] = clone;
+                    rewardPos = positions[rand];
+                    rewardObjs = clone;
                     board[rand] = 1;
                     break;
                 }
             }
-        }
 
-        SetUp();
+        //instatiate our AI
         agent = new InternalAgent();
-        agent.SendParameters(envParameters);
+        agent.SendParameters();
         Reset();
     }
-    public override void SetUp()
-    {
-        envParameters = new EnvironmentParameters()
-        {
-            observation_size = 0,
-            state_size = gridSize * gridSize,
-            action_descriptions = new List<string>() { "Up", "Down", "Left", "Right" },
-            action_size = 4,
-            env_name = "GridWorld",
-            action_space_type = "discrete",
-            state_space_type = "discrete",
-            num_agents = 1
-        };
 
-        List<string> playersList = new List<string>();
-        actorObjs = new List<GameObject>();
-        for (int i = 0; i < 10; i++)
-        {
-            playersList.Add("pit");
-        }
-        playersList.Add("agent");
-
-        for (int i = 0; i < 5; i++)
-        {
-            playersList.Add("goal");
-        }
-        players = playersList.ToArray();
-    }
-
-    public override List<float> collectState()
+    //check what the AI current state is
+    public List<float> collectState()
     {
         List<float> state = new List<float>();
-        float point = (gridSize * visualAgent.transform.position.x) + visualAgent.transform.position.z;
+        float point = (boardSize * AI.transform.position.x) + AI.transform.position.z;
         state.Add(point / 10);
         return state;
     }
 
-    public override void Reset()
+    //Reset our board and AI to beginning after each generation
+    public void Reset()
     {
-        base.Reset();
+        ResetVar();
+        rewardObjs.transform.position = rewardPos;
+        AI.transform.position = new Vector3(0, 2, 0);
+        generationReward = 0;
 
-        for (int x = 0; x < 1; x++)
-        {
-            rewardObjs[x].transform.position = rewardPos[x];
-        }
-
-        visualAgent.transform.position = new Vector3(0, 2, 0);
-        episodeReward = 0;
-        EndReset();
+        agent.SendState(collectState(), reward, done);
+        canStep = true;
+        begun = true;
     }
 
-    public override void MiddleStep(int action)
+    //Move our AI
+    public void PositionStep(int action)
     {
-        reward = -0.05f;
-        // 0 - Forward, 1 - Backward, 2 - Left, 3 - Right
-        if (action == 3)
-        {
-            Collider[] blockTest = Physics.OverlapBox(new Vector3(visualAgent.transform.position.x + 10, 0, visualAgent.transform.position.z), new Vector3(0.3f, 0.3f, 0.3f));
-            if (blockTest.Where(col => col.gameObject.tag == "wall").ToArray().Length == 0)
-            {
-                visualAgent.transform.position = new Vector3(visualAgent.transform.position.x + 10, 0, visualAgent.transform.position.z);
-            }
-        }
-
-        if (action == 2)
-        {
-            Collider[] blockTest = Physics.OverlapBox(new Vector3(visualAgent.transform.position.x - 10, 0, visualAgent.transform.position.z), new Vector3(0.3f, 0.3f, 0.3f));
-            if (blockTest.Where(col => col.gameObject.tag == "wall").ToArray().Length == 0)
-            {
-                visualAgent.transform.position = new Vector3(visualAgent.transform.position.x - 10, 0, visualAgent.transform.position.z);
-            }
-        }
-
+        reward = -0.10f;
+        
+        //Move AI Right
         if (action == 0)
         {
-            Collider[] blockTest = Physics.OverlapBox(new Vector3(visualAgent.transform.position.x, 0, visualAgent.transform.position.z + 10), new Vector3(0.3f, 0.3f, 0.3f));
-            if (blockTest.Where(col => col.gameObject.tag == "wall").ToArray().Length == 0)
+            //checks to make sure we are not colliding with a wall so we can continue that way
+            Collider[] posCheck = Physics.OverlapBox(new Vector3(AI.transform.position.x, 0, AI.transform.position.z + 10), new Vector3(0.3f, 0.3f, 0.3f));
+            if (posCheck.Where(col => col.gameObject.tag == "wall").ToArray().Length == 0)
             {
-                visualAgent.transform.position = new Vector3(visualAgent.transform.position.x, 0, visualAgent.transform.position.z + 10);
+                AI.transform.position = new Vector3(AI.transform.position.x, 2, AI.transform.position.z + 10);
             }
         }
-
-        if (action == 1)
+        
+        //Move AI Left
+        else if (action == 1)
         {
-            Collider[] blockTest = Physics.OverlapBox(new Vector3(visualAgent.transform.position.x, 0, visualAgent.transform.position.z - 10), new Vector3(0.3f, 0.3f, 0.3f));
-            if (blockTest.Where(col => col.gameObject.tag == "wall").ToArray().Length == 0)
+            Collider[] posCheck = Physics.OverlapBox(new Vector3(AI.transform.position.x, 0, AI.transform.position.z - 10), new Vector3(0.3f, 0.3f, 0.3f));
+            if (posCheck.Where(col => col.gameObject.tag == "wall").ToArray().Length == 0)
             {
-                visualAgent.transform.position = new Vector3(visualAgent.transform.position.x, 0, visualAgent.transform.position.z - 10);
+                AI.transform.position = new Vector3(AI.transform.position.x, 2, AI.transform.position.z - 10);
+            }
+        }
+        
+        //Move AI Forward
+        else if (action == 2)
+        {
+            Collider[] posCheck = Physics.OverlapBox(new Vector3(AI.transform.position.x - 10, 0, AI.transform.position.z), new Vector3(0.3f, 0.3f, 0.3f));
+            if (posCheck.Where(col => col.gameObject.tag == "wall").ToArray().Length == 0)
+            {
+                AI.transform.position = new Vector3(AI.transform.position.x - 10, 2, AI.transform.position.z);
             }
         }
 
-        Collider[] hitObjects = Physics.OverlapBox(visualAgent.transform.position, new Vector3(0.3f, 0.3f, 0.3f));
-       
-        if (hitObjects.Where(col => col.gameObject.tag == "prize").ToArray().Length == 1)
+        //Move AI Backwards
+        else if (action == 3)
+        {
+            Collider[] posCheck = Physics.OverlapBox(new Vector3(AI.transform.position.x + 10, 0, AI.transform.position.z), new Vector3(0.3f, 0.3f, 0.3f));
+            if (posCheck.Where(col => col.gameObject.tag == "wall").ToArray().Length == 0)
+            {
+                AI.transform.position = new Vector3(AI.transform.position.x + 10, 2, AI.transform.position.z);
+            }
+        }
+
+        //check if we collided with a hole or a reward
+        Collider[] hitObjs = Physics.OverlapBox(AI.transform.position, new Vector3(0.3f, 0.3f, 0.3f));
+
+        //colided with a chest and give a positive reward
+        if (hitObjs.Where(col => col.gameObject.tag == "prize").ToArray().Length == 1)
         {
             Debug.Log("Reward got");
             reward = 1;
             done = true;
-
-            for (int i = 0; i < hitObjects.Length; i++)
+            
+            //reward is transported so it can not be retrieved in the same generation
+            for (int i = 0; i < hitObjs.Length; i++)
             {
-                if (hitObjects[i].gameObject.tag == "prize")
+                if (hitObjs[i].gameObject.tag == "prize")
                 {
-                    hitObjects[i].transform.position = new Vector3(-100, -100, -100);
+                    hitObjs[i].transform.position = new Vector3(-100, -100, -100);
                 }
             }
-
-            if (reward == 5)
-                done = true;
         }
-        if (hitObjects.Where(col => col.gameObject.tag == "hole").ToArray().Length == 1)
+        //if AI collides with a hole then reset and give negative reward
+        if (hitObjs.Where(col => col.gameObject.tag == "hole").ToArray().Length == 1)
         {
             reward = -1;
             done = true;
         }
-        // Update is called once per frame
-
-        
-
     }
 
+    //Reset Scene if board is impossible for AI to complete
     public void reload()
     {
         SceneManager.LoadScene("SampleScene");
     }
 
+    //change the value of the AI Speed
     public void OnValueChanged()
     {
-        waitTime = GameObject.Find("Slider").GetComponent<Slider>().value;
+        speed = GameObject.Find("Slider").GetComponent<Slider>().value;
     }
+
+    //Reset the board variables
+    public virtual void ResetVar()
+    {
+        reward = 0;
+        currentStep = 0;
+        generationCount++;
+        done = false;
+        canStep = false;
+    }
+    
+    //facilitates the movement of the AI 
+    public virtual void Step()
+    {
+        canStep = false;
+        currentStep += 1;
+        if (currentStep >= maxSteps)
+        {
+            done = true;
+        }
+
+        reward = 0;
+        actions = agent.GetAction();
+
+        int sendAction = Mathf.FloorToInt(actions[0]);
+        PositionStep(sendAction);
+
+        StartCoroutine(Wait());
+    }
+
+    //Wait before AI can step again
+     public IEnumerator Wait()
+    {
+        yield return new WaitForSeconds(speed);
+        
+        agent.SendState(collectState(), reward, done);
+        canStep = true;
+    }
+
 }
 

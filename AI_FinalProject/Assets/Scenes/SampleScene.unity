@@ -215,23 +215,18 @@ MonoBehaviour:
   maxSteps: 150
   currentStep: 0
   begun: 0
-  acceptingSteps: 0
-  frameToSkip: 0
-  comPort: 0
-  framesSinceAction: 0
-  currentPythonCommand: 
-  skippingFrames: 0
+  canStep: 0
+  agent: {fileID: 0}
   actions: []
-  waitTime: 0.01
-  episodeCount: 1
-  humanControl: 0
-  bumper: 0
-  actorObjs: []
+  speed: 0
+  generationCount: 0
   players: []
-  visualAgent: {fileID: 315826691}
+  actorObjs: []
+  AI: {fileID: 315826691}
   hole: {fileID: 8251368723980350063, guid: 4d6ceffcbfcb8ed4781c96fcad3eb12a, type: 3}
   prize: {fileID: 4940517382072058667, guid: ee1fe8e3cf3ad034f9910488144bc8e8, type: 3}
-  wallObs: {fileID: 9082529807069961566, guid: 3441e137e5cc5164cacf41444a0d8d9c, type: 3}
+  wallObjs: {fileID: 9082529807069961566, guid: 3441e137e5cc5164cacf41444a0d8d9c,
+    type: 3}
   generations: {fileID: 1641886317}
   stepText: {fileID: 1138566052}
 --- !u!1 &46634712
