@@ -1,9 +1,16 @@
-﻿using System.Collections;
+﻿//Eashvar Balachandran
+//Adam Bilyea
+//Ricky Caceres
+//Shairanthan Maheswaran
+//November 11, 2020
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+
 
 public class Board : MonoBehaviour
 {
@@ -14,7 +21,7 @@ public class Board : MonoBehaviour
     public int currentStep;
     public bool begun;
     public bool canStep;
-    public InternalAgent agent;
+    public AI agent;
     public float[] actions;
     public float speed;
     public int generationCount;
@@ -32,6 +39,11 @@ public class Board : MonoBehaviour
     private int[] board;
     public Text generations;
     public Text stepText;
+
+    public AudioSource music;
+    public AudioSource resetSound;
+
+
     ///////////////////////////////////////////////////
 
     void Start()
@@ -39,8 +51,11 @@ public class Board : MonoBehaviour
         positions = new Vector3[100];
         board = new int[100];
 
-        //Set positions
-        int number = 0;
+        music.Play();
+        resetSound.Play();
+
+    //Set positions
+    int number = 0;
         for (int x = 0; x < 10; x++)
         {
             for (int z = 0; z < 10; z++)
@@ -130,7 +145,7 @@ public class Board : MonoBehaviour
             }
 
         //instatiate our AI
-        agent = new InternalAgent();
+        agent = new AI();
         agent.SendParameters();
         Reset();
     }
